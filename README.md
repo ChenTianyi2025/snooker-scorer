@@ -24,9 +24,13 @@
 #### 使用说明
 
 - 输入双方选手名字后可进入主计分界面
+<img width="1920" height="1015" alt="2 1(start)" src="https://github.com/user-attachments/assets/7dbbe8b3-4898-4dc4-b3d4-e67b69b31298" />
 
 - 在主界面中：
 0. 在`更多设置选项`中，设置台面红球数量（标准球台为15个），以实现自动计分；设置`满分杆提示`，以自动显示满分杆。
+<img width="1920" height="1019" alt="2 2 1(more)" src="https://github.com/user-attachments/assets/1b6fa21f-19ce-44c8-9337-86dd380c9be5" />
+<img width="1920" height="1017" alt="2 1 2(more)" src="https://github.com/user-attachments/assets/99804d0b-3b6e-41ab-ae82-ee6980e49684" />
+
 1. 直接按键盘上的数字键进行 **计分** ，例：红球入袋，得1分，按“1”；粉球入袋，得6分，按“6”。
 2. 按键盘上的`Alt+数字键`实现 **罚分** ，例：目标球为红球，选手击打了蓝球，罚5分，按“Alt+5”。
 3. 按回车键（Enter）实现击球方转换。
