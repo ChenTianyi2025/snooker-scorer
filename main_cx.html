@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>计分器</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: white;
+        }
+        
+        .roaming {
+            /*位于画面上方，居中*/
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-align: center;
+            /*文字加粗，字体大小*/
+            font-weight: bold;
+            font-size: 26px;
+        }
+
+        .left-side-score, .right-side-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 50px;
+        }
+        
+        h1 {
+            font-size: 5rem;
+            margin: 0 0 20px 0;
+        }
+        
+        .left-arrow, .right-arrow {
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+        
+        .left-arrow {
+            border-width: 20px 30px 20px 0;
+            border-color: transparent black transparent transparent;
+            /* color: black; */
+        }
+        
+        .right-arrow {
+            border-width: 20px 0 20px 30px;
+            border-color: transparent transparent transparent black;
+        }
+
+        button{
+            margin: 20px 0 0 0;
+            padding: 10px 20px;
+            border: none;
+            background: #0068f1;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            /*鼠标悬停时，出现阴影*/
+            transition: 0.3s;
+            margin: 20px 0 0 20px;
+            padding: 10px 20px;
+        }
+
+        .name{
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .possible-ball{
+            display: flex;
+            gap: 10px; /* 球之间的间距 */
+            padding: 20px;
+
+            position: absolute;
+            top: 15px;
+            right: 100px;
+        }
+
+        .ball {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            -webkit-text-stroke-width: medium;
+            text-align: center;
+            line-height: 38px;
+        }
+
+        #p-red-ball { background-color: red; }
+        #p-yellow-ball { background-color: yellow; }
+        #p-green-ball { background-color: rgb(8, 196, 8); }
+        #p-brown-ball { background-color: rgb(86, 36, 36); color: white; }
+        #p-blue-ball { background-color: rgb(57, 57, 243); color: white; }
+        #p-pink-ball { background-color: pink; }
+        #p-black-ball { background-color: black; color: white; }
+
+
+
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+            z-index: 1000;
+        }
+
+        .modal-content {
+          background: white;
+          width: 80%;
+          max-width: 500px;
+          margin: 100px auto;
+          padding: 30px;
+          border-radius: 12px;
+        }
+
+        .exit_set{
+            background: red;
+        }
+
+        .tips{
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 25px;
+            color: black;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+
+<body>
+    <p class="roaming" id="roaming"></p>
+    <div class="possible-ball" id="possible-ball">
+        <div class="ball" id="p-red-ball"></div>
+        <div class="ball" id="p-yellow-ball"></div>
+        <div class="ball" id="p-green-ball"></div>
+        <div class="ball" id="p-brown-ball"></div>
+        <div class="ball" id="p-blue-ball"></div>
+        <div class="ball" id="p-pink-ball"></div>
+        <div class="ball" id="p-black-ball"></div>
+    </div>
+    <div class="left-side-score" id="left-side-score">
+        <p id="left-name" class="name"></p>
+        <h1 id="left-number">0</h1>
+        <p id="left-shot-score" style="display: none;">0</p>
+        <p id="left-none-score" style="display: none;">0</p>
+        <p id="left-max-break" style="display: none;">0</p>
+        <div class="left-arrow" id="left-arrow"></div>
+    </div>
+
+    <div class="right-side-score" id="right-side-score">
+        <p id="right-name" class="name"></p>
+        <h1 id="right-number">0</h1>
+        <p id="right-shot-score" style="display: none;">0</p>
+        <p id="right-none-score" style="display: none;">0</p>
+        <p id="right-max-break" style="display: none;">0</p>
+        <div class="right-arrow" id="right-arrow"></div>
+    </div>
+
+    <button id="cheak">查看记录</button>
+    <button id="reset" class="reset">重置</button>
+    <button id="more_set" class="more_set">更多设置选项</button>
+    
+    <p id="tips" class="tips"></p>
+
+    <div id="Modal" class="modal">
+        <div class="modal-content">
+            <h3>更多设置选项</h3>
+            <button id="set_message" class="set_message">设置数据</button>
+            <button id="possible_tips" class="possible_tips">满分杆提示</button>
+            <button id="back" class="back">返回初始页</button>
+            <button id="exit_set" class="exit_set">退出设置</button>
+        </div>
+    </div>
+    <script>
+        if (localStorage.getItem("table_ball_number") === null){
+            localStorage.setItem("table_ball_number", [0,15,1,1,1,1,1,1]);
+        }
+        
+
+        let score = [0, 0];
+        let shot_score = [0, 0];
+        let none_score = [0, 0];//罚分
+        let max_break = [0, 0];
+        let side_number = 0;//0为左边，1为右边
+        let this_shot = 0;//记录击球
+        let last_shot = 0;//记录上回合击球
+        const table_ball_number = localStorage.getItem("table_ball_number").split(","); //台面球的数量，对应：[空余,红,黄,绿,棕,蓝,粉,黑]
+        // const table_ball_number = [0,15,1,1,1,1,1,1]
+        const ball_points = [0,1,2,3,4,5,6,7]
+        let table_ball_roaming = table_ball_number;
+        let roaming = 0;//记录台面剩余
+        let color_ball_state = 0;//清彩阶段记录
+        let cheak_state = 0;//记录是否查看过记录
+        const bg_color = "white";
+        const ball_name = ["","red","yellow","green","brown","blue","pink","black"];
+        let break_in_a_ball = [0,0,0,0,0,0,0,0];
+        let modal_state = 0;//记录设置弹出框是否打开，0为否，1为是
+        // let button_show_state = 1;//记录按钮是否显示
+        document.getElementById("left-name").innerHTML = localStorage.getItem("left-name");
+        document.getElementById("right-name").innerHTML = localStorage.getItem("right-name");
+        const tips = document.getElementById("tips");
+        const tips_text = ["","超分","复位黄球","复位绿球","复位棕球","复位蓝球","复位粉球","复位黑球"];
+
+        //弹窗交互
+        const modal = document.getElementById("Modal");
+        document.getElementById("more_set").addEventListener("click", function(){
+            modal.style.display = "block";
+            modal_state = 1;
+        });
+        document.getElementById("exit_set").addEventListener("click", function(){
+            modal.style.display = "none";
+            modal_state = 0;
+        });
+
+
+        document.getElementById("cheak").addEventListener("click", function(){
+            cheak();
+        });
+
+        document.getElementById("reset").addEventListener("click", function(){
+            reset();
+        });
+
+        document.getElementById("back").addEventListener("click", function(){
+            window.location.href = "./start_cx.html"
+        });
+
+        // const modal = document.getElementById("modal");
+        document.getElementById("set_message").addEventListener("click", function(){
+            input_ball_number();
+        });
+
+        document.getElementById("possible_tips").addEventListener("click", function(){
+            const isSetPostip = confirm("是否使用满分杆提示？是请按确认，否请按取消");
+            if(isSetPostip === true){
+                const PTStoPostip = prompt("Break/单杆达到多少时显示满分杆提示？")
+                const regex = /^[1-9]\d*$/;
+                if((PTStoPostip !== null && Number(PTStoPostip) !== NaN) && regex.test(PTStoPostip)){
+                    localStorage.setItem("possible_tip", PTStoPostip);
+                    alert("设置成功！");
+                }else{
+                    alert("请输入有效数字");
+                }
+            }else{
+                localStorage.setItem("possible_tip", -1);
+            }
+        });
+        
+        function unshow_possible_ball(){
+            document.getElementById("possible-ball").style.display = "none";
+        }
+
+        function show_possible_ball(){
+            document.getElementById("possible-ball").style.display = "flex";
+            let j = "red";
+            for(let i = 1;i<=7;i++){
+                j = ball_name[i];
+                document.getElementById(`p-${j}-ball`).textContent = break_in_a_ball[i];
+            }
+        }
+
+        function input_ball_number() {
+            const userInput = prompt("请输入您要设置的红球数量：（标准球台为15颗）", localStorage.getItem("table_ball_number")[2]);
+            if(userInput !== null){
+
+                if (Number(userInput) !== NaN){
+                    const regex = /^([1-9]|[12]\d|30)$/;
+                    if (regex.test(userInput)){
+                        localStorage.setItem("table_ball_number", [0,Number(userInput),1,1,1,1,1,1]);
+                        alert("设置成功");
+                    }else{
+                        alert("请输入正确的数字");
+                        input_ball_number();
+                    }
+                }else{
+                    alert("请输入正确的数字");
+                    input_ball_number();
+                }
+            }
+        }
+
+        function get_break(shot_list){
+            let break_shot = 0;
+            for(let i=1;i<=7;i++){
+                break_shot += shot_list[i] * ball_points[i];
+            }
+            return break_shot;
+        }
+
+        function cheak_roaming() {
+            let sum = 0;
+            break_in_a_ball[this_shot] += 1;
+            if(get_break(break_in_a_ball) >= Number(localStorage.getItem("possible_tip"))){
+                show_possible_ball();
+            }
+            if(this_shot === 1){
+                //击打了红球
+                table_ball_roaming[1] -= 1;
+                const red_ball_number = table_ball_roaming[1];
+                sum = red_ball_number * 8;
+                for(let i=2;i<=7;i++){
+                    sum += table_ball_roaming[i] * ball_points[i];
+                };
+                tips.innerHTML = "";
+                return sum;
+            }else {
+                //击打了彩球
+                if(table_ball_roaming[1] === 0 && last_shot != 1){
+                    //没有红球剩余
+                    tips.innerHTML = "";
+                    if(color_ball_state === 0){
+                        if (table_ball_roaming[2] === 1){
+                            color_ball_state = 1;
+                            // console.log("return 27")
+                            return 27;
+                        }
+                    }
+                    if (this_shot === 7){
+                        // console.log("return 0")
+                        return 0;
+                    }else{
+                        table_ball_roaming[this_shot] -= 1;
+                        for(let i = this_shot + 1;i<=7;i++){
+                            sum += table_ball_roaming[i] * ball_points[i];
+                        }
+                        return sum;
+                    }
+                }else{
+                    //有红球剩余
+                    const red_ball_number = table_ball_roaming[1];
+                    sum = red_ball_number * 8;
+                    for(let i=2;i<=7;i++){
+                        sum += table_ball_roaming[i] * ball_points[i];
+                    };
+                    //显示复位提示
+                    tips.innerHTML = tips_text[this_shot];
+                    tips.style.color = ball_name[this_shot];
+                    
+                    return sum;
+                }
+            }
+        }
+        function show_score() {
+            
+            document.getElementById("left-name").innerHTML = localStorage.getItem("left-name");
+            document.getElementById("right-name").innerHTML = localStorage.getItem("right-name");
+
+            document.getElementById("left-number").innerHTML = score[0];
+            document.getElementById("right-number").innerHTML = score[1];
+            if(side_number === 0){
+                document.getElementById("right-arrow").style.borderColor = `transparent transparent transparent ${bg_color}`;
+                document.getElementById("left-arrow").style.borderColor = "transparent black transparent transparent";
+            }else{
+                document.getElementById("left-arrow").style.borderColor = `transparent ${bg_color} transparent transparent`;
+                document.getElementById("right-arrow").style.borderColor = "transparent transparent transparent black";
+            }
+            if(this_shot != 0){
+                //TODO
+                const disparity = Math.abs(score[1] - score[0]);
+                roaming = cheak_roaming();
+                document.getElementById("roaming").innerHTML = `Disparity/差距: ${disparity} , Remaining/台面剩余: ${roaming} , Break/单杆： ${get_break(break_in_a_ball)}`;
+                // console.log(table_ball_roaming)
+            }else{
+                unshow_possible_ball();
+                break_in_a_ball = [0,0,0,0,0,0,0,0];
+                tips.innerHTML = "";
+                document.getElementById("roaming").innerHTML = `Disparity/差距: ${Math.abs(score[1] - score[0])} , Remaining/台面剩余: ${roaming}`;
+            }
+            if(get_break(break_in_a_ball) > max_break[side_number]){
+                max_break[side_number] = get_break(break_in_a_ball);
+                
+            }
+            last_shot = this_shot;
+            // console.log(get_break(break_in_a_ball))
+        }
+        function get_another_side_number(number) {
+            if(number === 0){
+                return 1;
+            }else{
+                return 0;
+            }
+        }
+
+        show_score();
+        document.addEventListener("keydown", function (e) {
+            if(!(modal_state === 1)){
+            if(e.key === '4' && e.altKey){
+                e.preventDefault();
+                // console.log("alt+4");
+                score[get_another_side_number(side_number)] += 4;
+                none_score[side_number] += 4;
+                this_shot = 0;
+            }else if(e.key === '5' && e.altKey){
+                e.preventDefault();
+                score[get_another_side_number(side_number)] += 5;   
+                none_score[side_number] += 5;
+                this_shot = 0;
+            }else if(e.key === '6' && e.altKey){
+                e.preventDefault();
+                score[get_another_side_number(side_number)] += 6;
+                none_score[side_number] += 6;
+                this_shot = 0;
+            }else if(e.key === '7' && e.altKey){
+                e.preventDefault();
+                score[get_another_side_number(side_number)] += 7;
+                none_score[side_number] += 7;
+                this_shot = 0;
+            }else if (e.key === '1') {
+                score[side_number] += 1;
+                shot_score[side_number] += 1;
+                this_shot = 1;
+            }else if (e.key === '2') {
+                score[side_number] += 2;
+                shot_score[side_number] += 2;
+                this_shot = 2;
+            }else if (e.key === '3') {
+                score[side_number] += 3;
+                shot_score[side_number] += 3;
+                this_shot = 3;
+            }else if (e.key === '4') {
+                score[side_number] += 4;
+                shot_score[side_number] += 4;
+                this_shot = 4;
+            }else if (e.key === '5') {
+                score[side_number] += 5;
+                shot_score[side_number] += 5;
+                this_shot = 5;
+            }else if (e.key === '6') {
+                score[side_number] += 6;
+                shot_score[side_number] += 6;
+                this_shot = 6;
+            }else if (e.key === '7') {
+                score[side_number] += 7;
+                shot_score[side_number] += 7;
+                this_shot = 7;
+            }else if (e.key === "Enter") {
+                if(side_number === 0){
+                    side_number = 1;
+                }else {
+                    side_number = 0;
+                };
+                this_shot = 0;
+            };
+            show_score();
+            }
+        });
+        
+
+
+        function cheak(){
+            //弹出窗口，显示得分、罚分、净得分
+            if(cheak_state === 0){
+                cheak_state = 1;
+                document.getElementById("left-arrow").style.borderColor = `transparent ${bg_color} transparent transparent`;
+                document.getElementById("right-arrow").style.borderColor = `transparent transparent transparent ${bg_color}`;
+
+                document.getElementById("left-shot-score").style.display = "block";
+                document.getElementById("left-shot-score").innerHTML = `净得分：${shot_score[0]}`;
+                document.getElementById("right-shot-score").style.display = "block";
+                document.getElementById("right-shot-score").innerHTML = `净得分：${shot_score[1]}`;
+                document.getElementById("left-max-break").style.display = "block";
+                document.getElementById("left-max-break").innerHTML = `单杆最高：${max_break[0]}`;
+                document.getElementById("right-max-break").style.display = "block";
+                document.getElementById("right-max-break").innerHTML = `单杆最高：${max_break[1]}`
+
+                document.getElementById("left-none-score").style.display = "block";
+                document.getElementById("left-none-score").innerHTML = ` 罚分：${none_score[0]}`;
+                document.getElementById("right-none-score").style.display = "block";
+                document.getElementById("right-none-score").innerHTML = ` 罚分：${none_score[1]}`;
+
+                document.getElementById("cheak").innerHTML = "返回";
+            }else{
+                this_shot = 0;
+                show_score();
+                document.getElementById("left-shot-score").style.display = "none";
+                document.getElementById("right-shot-score").style.display = "none";
+                document.getElementById("left-none-score").style.display = "none";
+                document.getElementById("right-none-score").style.display = "none";
+                document.getElementById("left-max-break").style.display = "none";
+                document.getElementById("right-max-break").style.display = "none";
+
+                document.getElementById("cheak").innerHTML = "查看记录";
+                cheak_state = 0;
+            };
+        }
+        function reset() {
+            const isConfirmed = confirm("确定要重置吗？");
+            if (!isConfirmed) {
+                return;
+            }else{
+                score = [0,0];
+                shot_score = [0,0];
+                none_score = [0,0];
+                max_break = [0,0];
+                break_in_a_ball = [0,0,0,0,0,0,0,0];
+                side_number = 0;
+                this_shot = 0;
+                roaming = 0;
+                table_ball_roaming = table_ball_number;
+                localStorage.setItem("left-name", "");
+                localStorage.setItem("right-name", "");
+                tips.innerHTML = "";
+                show_score();
+                alert("已重置！请手动刷新页面！");
+            }
+        }
+    </script>
+</body>
+
+</html>
