@@ -4,6 +4,8 @@
 
 #### 介绍
 简易斯诺克比赛计分器。
+
+程序存在不足之处，**欢迎您为本程序提出意见，帮助修改完善程序！**
 > 本程序制作过程中运用了AI工具辅助
 
 
@@ -15,8 +17,7 @@
 
 #### 快速启动
 
-1. 从[v1.0 **发行版** ](https://github.com/ChenTianyi2025/snooker-scorer/releases/tag/v1.2)下载程序压缩包；
-<img width="919" height="432" alt="1 1(Releases)" src="https://github.com/user-attachments/assets/988e75ae-83b9-4141-a0b4-079524d92561" />
+1. 从[**发行版**（Releases） ](https://github.com/ChenTianyi2025/snooker-scorer/releases/tag/v1.2)下载最新程序压缩包；
 
 2. 解压后打开文件夹，直接双击运行`start_cx.html`即可进入程序。
 <img width="919" height="472" alt="1 2(start)" src="https://github.com/user-attachments/assets/f201fe63-477e-4cf1-8187-ad777c9fd05c" />
@@ -36,6 +37,13 @@
 2. 按键盘上的`Alt+数字键`实现 **罚分** ，例：目标球为红球，选手击打了蓝球，罚5分，按“Alt+5”。
 3. 按回车键（Enter）实现击球方转换。
 4. 更多计分规则见[ **计分规则** ](https://github.com/ChenTianyi2025/snooker-scorer/blob/main/rules.md)
+
+#### 程序不足
+**欢迎您为本程序提出意见，帮助修改完善程序！**
+1. 本程序只能使用键盘实现计分、罚分等；
+2. 页面效果有待完善；
+3. 计分功能、台面剩余分数计算功能均有待完善；
+4. 有关存储数据、记录大比分等功能尚未落实等。
 
 #### 参与贡献
 
