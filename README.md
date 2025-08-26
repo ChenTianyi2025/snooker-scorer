@@ -15,7 +15,7 @@
 
 #### 快速启动
 
-1. 从[v1.0 **发行版** ](https://github.com/ChenTianyi2025/snooker-scorer/releases/tag/v1.0)下载程序压缩包；
+1. 从[v1.0 **发行版** ](https://github.com/ChenTianyi2025/snooker-scorer/releases/tag/v1.2)下载程序压缩包；
 <img width="919" height="432" alt="1 1(Releases)" src="https://github.com/user-attachments/assets/988e75ae-83b9-4141-a0b4-079524d92561" />
 
 2. 解压后打开文件夹，直接双击运行`start_cx.html`即可进入程序。
