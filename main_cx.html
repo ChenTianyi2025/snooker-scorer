@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>计分器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: white;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .roaming-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .roaming {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .scores-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .left-side-score, .right-side-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px;
+            flex: 1;
+        }
+        
+        h1 {
+            font-size: 5rem;
+            margin: 0 0 20px 0;
+        }
+        
+        .left-arrow, .right-arrow {
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+        
+        .left-arrow {
+            border-width: 20px 30px 20px 0;
+            border-color: transparent black transparent transparent;
+        }
+        
+        .right-arrow {
+            border-width: 20px 0 20px 30px;
+            border-color: transparent transparent transparent black;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            background: #0068f1;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .possible-ball {
+            display: flex;
+            gap: 5px;
+            padding: 0 10px;
+            align-items: center;
+        }
+
+        .ball {
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 28px;
+            font-size: 12px;
+        }
+
+        #p-red-ball { background-color: red; }
+        #p-yellow-ball { background-color: yellow; }
+        #p-green-ball { background-color: rgb(8, 196, 8); }
+        #p-brown-ball { background-color: rgb(86, 36, 36); color: white; }
+        #p-blue-ball { background-color: rgb(57, 57, 243); color: white; }
+        #p-pink-ball { background-color: pink; }
+        #p-black-ball { background-color: black; color: white; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .exit_set, .exit_message {
+            background: red;
+        }
+
+        .tips {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            color: black;
+            font-weight: bold;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        #message {
+            font-size: 16px;
+            font-weight: bold;
+            white-space: pre-line;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .score-controls {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .score-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .score-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .foul-btn {
+            width: 70px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ff4444;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .next-player-btn {
+            width: 150px;
+            height: 50px;
+            background-color: #44ff44;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .scores-container {
+                flex-direction: row;
+                align-items: flex-start;
+                padding: 0 10px;
+            }
+            
+            .left-side-score, .right-side-score {
+                margin: 0 5px;
+            }
+            
+            h1 {
+                font-size: 3rem;
+            }
+            
+            .name {
+                font-size: 18px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                width: 90%;
+                margin: 10px auto;
+            }
+            
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .roaming-container {
+                flex-direction: column;
+            }
+            
+            .possible-ball {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-top: 10px;
+                justify-content: center;
+            }
+            
+            .ball {
+                width: 25px;
+                height: 25px;
+                line-height: 23px;
+                font-size: 10px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+                margin: 20px auto;
+            }
+            
+            .tips {
+                font-size: 16px;
+                padding: 5px;
+            }
+            
+            .roaming {
+                font-size: 16px;
+            }
+            
+            .score-controls {
+                display: flex;
+            }
+        }
+        
+        /* 桌面端保持原有功能 */
+        @media (min-width: 769px) {
+            .score-controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="roaming-container">
+            <p class="roaming" id="roaming"></p>
+            <div class="possible-ball" id="possible-ball">
+                <div class="ball" id="p-red-ball"></div>
+                <div class="ball" id="p-yellow-ball"></div>
+                <div class="ball" id="p-green-ball"></div>
+                <div class="ball" id="p-brown-ball"></div>
+                <div class="ball" id="p-blue-ball"></div>
+                <div class="ball" id="p-pink-ball"></div>
+                <div class="ball" id="p-black-ball"></div>
+            </div>
+        </div>
+        
+        <div class="scores-container">
+            <div class="left-side-score" id="left-side-score">
+                <p id="left-name" class="name"></p>
+                <h1 id="left-number">0</h1>
+                <p id="left-shot-score" style="display: none;">0</p>
+                <p id="left-none-score" style="display: none;">0</p>
+                <p id="left-max-break" style="display: none;">0</p>
+                <div class="left-arrow" id="left-arrow"></div>
+            </div>
+
+            <div class="right-side-score" id="right-side-score">
+                <p id="right-name" class="name"></p>
+                <h1 id="right-number">0</h1>
+                <p id="right-shot-score" style="display: none;">0</p>
+                <p id="right-none-score" style="display: none;">0</p>
+                <p id="right-max-break" style="display: none;">0</p>
+                <div class="right-arrow" id="right-arrow"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="cheak">查看记录</button>
+            <button id="reset" class="reset">重置</button>
+            <button id="special_handle" class="special_handle">特殊处置</button>
+            <button id="more_set" class="more_set">设置选项</button>
+        </div>
+        
+        <!-- 移动端计分按钮 -->
+        <div class="score-controls">
+            <div class="score-row">
+                <button class="score-btn" data-ball="1" style="background-color: red;">1</button>
+                <button class="score-btn" data-ball="2" style="background-color: yellow; color: black;">2</button>
+                <button class="score-btn" data-ball="3" style="background-color: green;">3</button>
+                <button class="score-btn" data-ball="4" style="background-color: brown;">4</button>
+                <button class="score-btn" data-ball="5" style="background-color: blue;">5</button>
+                <button class="score-btn" data-ball="6" style="background-color: pink;">6</button>
+                <button class="score-btn" data-ball="7" style="background-color: black;">7</button>
+            </div>
+            <div class="score-row">
+                <button class="foul-btn" data-foul="4">Foul 4</button>
+                <button class="foul-btn" data-foul="5">Foul 5</button>
+                <button class="foul-btn" data-foul="6">Foul 6</button>
+                <button class="foul-btn" data-foul="7">Foul 7</button>
+            </div>
+            <div class="score-row">
+                <button class="next-player-btn" id="next-player">Next Player</button>
+            </div>
+        </div>
+        
+        <p id="tips" class="tips"></p>
+
+        <div id="set_Modal" class="modal">
+            <div class="modal-content">
+                <h3>更多设置选项</h3>
+                <div class="modal-buttons">
+                    <button id="set_message" class="set_message">设置数据</button>
+                    <button id="possible_tips" class="possible_tips">满分杆提示</button>
+                    <button id="get_message" class="get_message">查看后台数据</button>
+                    <button id="back" class="back">返回初始页</button>
+                    <button id="exit_set" class="exit_set">退出设置</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="special_Modal" class="modal">
+            <div class="modal-content">
+                <h3>特殊处置</h3>
+                <div class="modal-buttons">
+                    <button id="reduce_red_ball" class="reduce_red_ball">减少红球数量</button>
+                    <button id="exit_special" class="exit_set">退出</button>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="message_Modal" class="modal">
+            <div class="modal-content">
+                <h3>后台数据 - 已自动复制</h3>
+                <p id="message" class="message"></p>
+                <button id="exit_message" class="exit_message">返回</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

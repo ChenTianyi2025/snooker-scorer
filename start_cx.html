@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>计分器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            outline: none;
+            font-size: 16px;
+            padding: 5px 0;
+            box-sizing: border-box;
+        }
+        
+        .start {
+            cursor: pointer;
+            width: 100%;
+            height: 50px;
+            background-color: rgb(53, 53, 231);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        
+        .start:hover {
+            background-color: rgb(43, 43, 201);
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            input {
+                height: 35px;
+                font-size: 14px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>欢迎使用斯诺克计分器</h2>
+        <div class="form-group">
+            <input type="text" id="player1" class="player" placeholder="请输入选手甲名字">
+        </div>
+        <div class="form-group">
+            <input type="text" id="player2" class="player" placeholder="请输入选手乙名字">
+        </div>
+        <button id="start" class="start">开始</button>
+    </div>
+
+    <script>
+        document.getElementById('start').onclick = function(){
+            const player1Name = document.getElementById('player1').value || "选手甲";
+            const player2Name = document.getElementById('player2').value || "选手乙";
+            localStorage.setItem("left-name", player1Name);
+            localStorage.setItem("right-name", player2Name);
+            window.location.href = './main_cx.html';
+        }
+    </script>
+</body>
+</html>
