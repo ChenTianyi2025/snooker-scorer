@@ -41,11 +41,39 @@ document.getElementById("left-name").innerHTML = localStorage.getItem("left-name
 document.getElementById("right-name").innerHTML = localStorage.getItem("right-name");
 
 
+//设置界面初始化
+function init_setting(){
+    const high_break_tips = document.getElementById("high_break_tips")
+    if (localStorage.getItem("show_break_score") === "/" || localStorage.getItem("show_break_score") === null){
+        high_break_tips.checked = false;
+        document.getElementById("high_break_tips_score").value = "30";
+    }else{
+        high_break_tips.checked = true;
+        document.getElementById("high_break_tips_score").value = localStorage.getItem("show_break_score");
+    }
+
+    const possible_tips = document.getElementById("possible_tips")
+    if (localStorage.getItem("possible_tips") === "/" || localStorage.getItem("possible_tips") === null){
+        possible_tips.checked = false;
+        document.getElementById("possible_tips_score").value = "";
+    }else{
+        possible_tips.checked = true;
+        document.getElementById("possible_tips_score").value = localStorage.getItem("possible_tips");
+    }
+
+    const remaining_tips = document.getElementById("remaining_tips")
+    if (localStorage.getItem("show_remaining_score") === "/" || localStorage.getItem("show_remaining_score") === null){
+        remaining_tips.checked = false;
+    }else{
+        remaining_tips.checked = true;
+    }
+}
 // 弹窗交互
 // const set_modal = document.getElementById("set_Modal");
-document.getElementById("more_set").addEventListener("click", function(){
+document.getElementById("setting").addEventListener("click", function(){
     set_modal.style.display = "block";
     modal_state = 1;
+    init_setting();
 });
 document.getElementById("exit_set").addEventListener("click", function(){
     set_modal.style.display = "none";
@@ -127,21 +155,61 @@ document.getElementById("next-player").addEventListener("click", function() {
     show_score();
 });
 
-document.getElementById("possible_tips").addEventListener("click", function(){
-    const isSetPostip = confirm("是否使用满分杆提示？是请按确认，否请按取消");
-    if(isSetPostip === true){
-        const PTStoPostip = prompt("Break/单杆达到多少时显示满分杆提示？")
+// 保存设置按钮
+function save_set(){
+    //possible_tips X   =>  localStorage.setItem("possible_tips", "/");
+    //high_break_tips X  => localStorage.setItem("show_break", "/");
+    //remaining_tips X   => localStorage.set.....
+    if(document.getElementById("possible_tips").checked){
+        const _possible_tips = document.getElementById("possible_tips_score").value;
         const regex = /^[1-9]\d*$/;
-        if((PTStoPostip !== null && Number(PTStoPostip) !== NaN) && regex.test(PTStoPostip)){
-            localStorage.setItem("possible_tip", PTStoPostip);
-            alert("设置成功！");
+        if((_possible_tips !== null && Number(_possible_tips.trim()) !== NaN) && regex.test(_possible_tips)){
+            localStorage.setItem("possible_tips", _possible_tips);
+            // alert(`满分杆提示设置成功，将在Break/单杆高于${_possible_tips}时显示`)
         }else{
-            alert("请输入有效数字");
+            alert("满分杆提示设置失败，请在输入框中输入有效数字")
         }
     }else{
-        localStorage.setItem("possible_tip", -1);
+        localStorage.setItem("possible_tips", "/");
     }
-});
+
+    if(document.getElementById("high_break_tips").checked){
+        const highBreakTips = document.getElementById("high_break_tips_score").value;
+        const regex = /^[1-9]\d*$/;
+        if(regex.test(highBreakTips)){
+            localStorage.setItem("show_break_score", highBreakTips);
+            // alert(`单杆高分提示设置成功，将在单杆高于${highBreakTips}时显示`);
+        }else{
+            alert("单杆高分提示设置失败，请在输入框中输入有效数字");
+        }
+    }else{
+        localStorage.setItem("show_break_score", "/");
+    }
+
+    if(document.getElementById("remaining_tips").checked){
+        localStorage.setItem("show_remaining_score", "0")
+        // alert("剩余分数提示设置成功，将在击球后显示");
+    }else{
+        localStorage.setItem("show_remaining_score", "/");
+    }
+
+    alert("设置保存成功")
+} 
+// document.getElementById("possible_tips").addEventListener("click", function(){
+//     const isSetPostip = confirm("是否使用满分杆提示？是请按确认，否请按取消");
+//     if(isSetPostip === true){
+//         const PTStoPostip = prompt("Break/单杆达到多少时显示满分杆提示？")
+//         const regex = /^[1-9]\d*$/;
+//         if((PTStoPostip !== null && Number(PTStoPostip.trim()) !== NaN) && regex.test(PTStoPostip)){
+//             localStorage.setItem("possible_tip", PTStoPostip);
+//             alert("设置成功！");
+//         }else{
+//             alert("设置失败");
+//         }
+//     }else{
+//         localStorage.setItem("possible_tip", "/");
+//     }
+// });
 
 function unshow_possible_ball(){
     document.getElementById("possible-ball").style.display = "none";
@@ -229,7 +297,7 @@ function get_break(shot_list){
 function cheak_roaming() {
     let sum = 0;
     break_in_a_ball[this_shot] += 1;
-    if(get_break(break_in_a_ball) >= Number(localStorage.getItem("possible_tip"))){
+    if(get_break(break_in_a_ball) >= Number(localStorage.getItem("possible_tips"))){
         show_possible_ball();
     }
     if(this_shot === 1){
@@ -280,6 +348,19 @@ function cheak_roaming() {
     }
 }
 
+function show_remaining_break(remaining, break_shot, show_break_score, show_remaining_score){
+    const remaining_and_break = document.getElementById("roaming");
+    if(remaining >= Number(show_remaining_score)){
+        if(break_shot >= Number(show_break_score)){
+            remaining_and_break.innerHTML = `Disparity/差距: ${Math.abs(score[1] - score[0])} , Remaining/台面剩余: ${remaining} , Break/单杆： ${break_shot}`;
+        }else{
+            remaining_and_break.innerHTML = `Disparity/差距: ${Math.abs(score[1] - score[0])} , Remaining/台面剩余: ${remaining}`;
+        }
+    }else if(break_shot >= Number(show_break_score)){
+        remaining_and_break.innerHTML = `Break/单杆： ${break_shot}`;
+    }
+}
+
 function show_score() {
     
     document.getElementById("left-name").innerHTML = localStorage.getItem("left-name");
@@ -298,13 +379,13 @@ function show_score() {
         //TODO
         const disparity = Math.abs(score[1] - score[0]);
         roaming = cheak_roaming();
-        document.getElementById("roaming").innerHTML = `Disparity/差距: ${disparity} , Remaining/台面剩余: ${roaming} , Break/单杆： ${get_break(break_in_a_ball)}`;
+        show_remaining_break(roaming, get_break(break_in_a_ball), localStorage.getItem("show_break_score"), localStorage.getItem("show_remaining_score"));
         // console.log(table_ball_roaming)
     }else{
         unshow_possible_ball();
         break_in_a_ball = [0,0,0,0,0,0,0,0];
         tips.innerHTML = "";
-        document.getElementById("roaming").innerHTML = `Disparity/差距: ${Math.abs(score[1] - score[0])} , Remaining/台面剩余: ${roaming}`;
+        show_remaining_break(roaming, 0, "/", localStorage.getItem("show_remaining_score"));
     }
     if(get_break(break_in_a_ball) > max_break[side_number]){
         max_break[side_number] = get_break(break_in_a_ball);

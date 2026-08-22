@@ -116,7 +116,7 @@
             font-size: 12px;
         }
 
-        #p-red-ball { background-color: red; }
+        #p-red-ball { background-color: red; color: white;}
         #p-yellow-ball { background-color: yellow; }
         #p-green-ball { background-color: rgb(8, 196, 8); }
         #p-brown-ball { background-color: rgb(86, 36, 36); color: white; }
@@ -310,6 +310,57 @@
                 display: none;
             }
         }
+
+
+
+        .more_set_div{
+            width: 100%;
+        }
+
+        .more_set_group{
+
+            border: 1px solid black;
+            border-radius: 8px;
+
+            margin: 8px 0;
+            padding: 8px 16px;
+        }
+
+        .more_set_group summary{
+            cursor: pointer;
+            font-weight: 500;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+        }
+
+        .more_set-details_area {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0 12px 32px;
+        }
+        .more_set-details_area input {
+
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .more_set-details_area input:focus {
+            outline: none;
+        }
+
+        .save_set{
+            width: 100%;
+            height: 40px;
+            /* background-color: #44ff44; */
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 
@@ -352,7 +403,7 @@
             <button id="cheak">查看记录</button>
             <button id="reset" class="reset">重置</button>
             <button id="special_handle" class="special_handle">特殊处置</button>
-            <button id="more_set" class="more_set">设置选项</button>
+            <button id="setting" class="setting">设置选项</button>
         </div>
         
         <!-- 移动端计分按钮 -->
@@ -381,13 +432,44 @@
 
         <div id="set_Modal" class="modal">
             <div class="modal-content">
-                <h3>更多设置选项</h3>
+                <h3>设置选项</h3>
                 <div class="modal-buttons">
                     <button id="set_message" class="set_message">设置数据</button>
-                    <button id="possible_tips" class="possible_tips">满分杆提示</button>
+                    <!-- <button id="possible_tips" class="possible_tips">满分杆提示</button> -->
                     <button id="get_message" class="get_message">查看后台数据</button>
                     <button id="back" class="back">返回初始页</button>
                     <button id="exit_set" class="exit_set">退出设置</button>
+
+                    <div class="more_set_div">
+                        <details class="more_set_group">
+                            <summary>
+                                <input type="checkbox" id="high_break_tips">启用单杆高分提示
+                            </summary>
+                            <div class="more_set-details_area">
+                                Break/单杆达到多少时显示单杆高分提示: <input type="number" id="high_break_tips_score" value="30">
+                            </div>
+                        </details>
+
+                        <details class="more_set_group">
+                            <summary>
+                                <input type="checkbox" id="possible_tips">启用满分杆提示 / 147提示
+                            </summary>
+                            <div class="more_set-details_area">
+                                Break/单杆达到多少时显示满分杆提示: <input type="number" id="possible_tips_score">
+                            </div>
+                        </details>
+
+                        <details class="more_set_group">
+                            <summary>
+                                <input type="checkbox" id="remaining_tips">启用台面剩余分数(remaining)提示
+                            </summary>
+                            <div class="more_set-details_area">
+                                注意：启用台面剩余分数提示必须要求正确的按要求使用键盘（移动端使用按钮）记录击球与进球！
+                            </div>
+                        </details>
+
+                        <button id="save_set" class="save_set" onclick="save_set()">保存以上设置</button>
+                    </div>
                 </div>
             </div>
         </div>
