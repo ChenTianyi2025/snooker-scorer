@@ -441,27 +441,27 @@
                     <button id="exit_set" class="exit_set">退出设置</button>
 
                     <div class="more_set_div">
-                        <details class="more_set_group">
+                        <details class="more_set_group" id="high_break_tips_div">
                             <summary>
-                                <input type="checkbox" id="high_break_tips">启用单杆高分提示
+                                <input type="checkbox" id="high_break_tips" onchange="open_details('high_break_tips_div', 'high_break_tips')">启用单杆高分提示
                             </summary>
                             <div class="more_set-details_area">
                                 Break/单杆达到多少时显示单杆高分提示: <input type="number" id="high_break_tips_score" value="30">
                             </div>
                         </details>
 
-                        <details class="more_set_group">
+                        <details class="more_set_group" id="possible_tips_div">
                             <summary>
-                                <input type="checkbox" id="possible_tips">启用满分杆提示 / 147提示
+                                <input type="checkbox" id="possible_tips" onchange="open_details('possible_tips_div', 'possible_tips')">启用满分杆提示 / 147提示
                             </summary>
                             <div class="more_set-details_area">
                                 Break/单杆达到多少时显示满分杆提示: <input type="number" id="possible_tips_score">
                             </div>
                         </details>
 
-                        <details class="more_set_group">
+                        <details class="more_set_group" id="remaining_tips_div">
                             <summary>
-                                <input type="checkbox" id="remaining_tips">启用台面剩余分数(remaining)提示
+                                <input type="checkbox" id="remaining_tips" onchange="open_details('remaining_tips_div', 'remaining_tips')">启用台面剩余分数(remaining)提示
                             </summary>
                             <div class="more_set-details_area">
                                 注意：启用台面剩余分数提示必须要求正确的按要求使用键盘（移动端使用按钮）记录击球与进球！

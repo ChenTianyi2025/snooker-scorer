@@ -211,6 +211,13 @@ function save_set(){
 //     }
 // });
 
+function open_details(div_id , checkbox_id){
+    if(document.getElementById(checkbox_id).checked){
+        document.getElementById(div_id).open = true;
+    }
+}
+
+
 function unshow_possible_ball(){
     document.getElementById("possible-ball").style.display = "none";
 }
@@ -358,6 +365,8 @@ function show_remaining_break(remaining, break_shot, show_break_score, show_rema
         }
     }else if(break_shot >= Number(show_break_score)){
         remaining_and_break.innerHTML = `Break/单杆： ${break_shot}`;
+    }else{
+        remaining_and_break.innerHTML = "";
     }
 }
 
